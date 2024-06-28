@@ -5,7 +5,7 @@
     "lib": [
       "dom",
       "esnext",
-      "dom.iterable",
+      "dom.iterable"
     ],
     "strict": true,
     "noEmit": true,
@@ -29,7 +29,10 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": [
     "next-env.d.ts",

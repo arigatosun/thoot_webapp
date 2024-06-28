@@ -87,9 +87,14 @@ export function JwtSignInView() {
           {`アカウントをお持ちではありませんか?`}
         </Typography>
 
-        <Link component={RouterLink} href={paths.auth.jwt.signUp.root} variant="subtitle2">
-          新規会員登録
-        </Link>
+        <Link 
+  component={RouterLink} 
+  href={paths.auth.jwt.signUp.root} 
+  variant="subtitle2"
+  sx={{ color: "#F8A1A7" }}  // この行を追加
+>
+  新規会員登録
+</Link>
       </Stack>
     </Stack>
   );
@@ -104,9 +109,9 @@ export function JwtSignInView() {
           href="#"
           variant="body2"
           color="inherit"
-          sx={{ alignSelf: 'flex-end' }}
+          sx={{ alignSelf: 'flex-end', color: "#F8A1A7" }}
         >
-          Forgot password?
+          パスワードを忘れましたか?
         </Link>
 
         <Field.Text
@@ -128,16 +133,21 @@ export function JwtSignInView() {
       </Stack>
 
       <LoadingButton
-        fullWidth
-        color="inherit"
-        size="large"
-        type="submit"
-        variant="contained"
-        loading={isSubmitting}
-        loadingIndicator="ログイン中..."
-      >
-        ログイン
-      </LoadingButton>
+         fullWidth
+         color="inherit"
+         size="large"
+         type="submit"
+         variant="contained"
+         loading={isSubmitting}
+         loadingIndicator="ログイン中..."
+  sx={{
+    backgroundColor: "#F8A1A7",
+    '&:hover': { backgroundColor: "#F8A1A7" },
+    '&:disabled': { backgroundColor: "#F8A1A7" }
+  }}  // この sx プロパティを追加
+>
+  ログイン
+</LoadingButton>
     </Stack>
   );
 

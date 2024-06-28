@@ -1,19 +1,15 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 /**
  * @type {import('next').NextConfig}
  */
-
-const isStaticExport = 'false';
-
 const nextConfig = {
   trailingSlash: true,
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH,
-  env: {
-    BUILD_STATIC_EXPORT: isStaticExport,
-  },
   modularizeImports: {
-    '@mui/icons-material': {
-      transform: '@mui/icons-material/{{member}}',
-    },
     '@mui/material': {
       transform: '@mui/material/{{member}}',
     },
@@ -27,11 +23,13 @@ const nextConfig = {
       use: ['@svgr/webpack'],
     });
 
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'react-hook-form': path.resolve(__dirname, 'node_modules/react-hook-form'),
+    };
+
     return config;
   },
-  ...(isStaticExport === 'true' && {
-    output: 'export',
-  }),
 };
 
 export default nextConfig;

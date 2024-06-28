@@ -24,8 +24,6 @@ import { Form, Field } from 'src/components/hook-form';
 
 import { signUp } from 'src/auth/context/jwt';
 
-// 変更点: useAuthContext のインポートを削除
-
 // ----------------------------------------------------------------------
 
 export type SignUpSchemaType = zod.infer<typeof SignUpSchema>;
@@ -33,18 +31,34 @@ export type SignUpSchemaType = zod.infer<typeof SignUpSchema>;
 export const SignUpSchema = zod.object({
   email: zod
     .string()
-    .min(1, { message: 'Email is required!' })
-    .email({ message: 'Email must be a valid email address!' }),
+    .min(1, { message: 'メールアドレスを入力してください' })
+    .email({ message: '有効なメールアドレスを入力してください' }),
   password: zod
     .string()
-    .min(1, { message: 'Password is required!' })
-    .min(6, { message: 'Password must be at least 6 characters!' }),
+    .min(1, { message: 'パスワードを入力してください' })
+    .min(8, { message: 'パスワードは8文字以上である必要があります' })
+    .regex(/[A-Z]/, { message: 'パスワードには少なくとも1つの大文字を含める必要があります' }),
 });
 
 // ----------------------------------------------------------------------
+// PasswordRequirements コンポーネントを追加
+const PasswordRequirements = ({ password }: { password: string }) => {
+  const hasMinLength = password.length >= 8;
+  const hasUpperCase = /[A-Z]/.test(password);
+
+  return (
+    <Stack spacing={1} sx={{ mt: 2 }}>
+      <Typography variant="caption" color={hasMinLength ? 'success.main' : 'text.secondary'}>
+        ✓ 8文字以上
+      </Typography>
+      <Typography variant="caption" color={hasUpperCase ? 'success.main' : 'text.secondary'}>
+        ✓ 大文字を1文字以上含む
+      </Typography>
+    </Stack>
+  );
+};
 
 export function JwtSignUpView() {
-  // 変更点: checkUserSession の使用を削除
   const router = useRouter();
 
   const password = useBoolean();
@@ -64,7 +78,10 @@ export function JwtSignUpView() {
   const {
     handleSubmit,
     formState: { isSubmitting },
+    watch, // 追加: watch関数を取得
   } = methods;
+
+  const passwordValue = watch('password'); // 追加: パスワードの値を監視
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -75,15 +92,13 @@ export function JwtSignUpView() {
         lastName: '',
       });
 
-      // 登録成功後の遷移先を変更
       router.push(paths.auth.jwt.signUp.registration);
     } catch (error) {
       console.error(error);
       setErrorMsg(error instanceof Error ? error.message : 'An unexpected error occurred');
     }
-  }); // この閉じ括弧の位置を修正
+  });
 
-  // 以下のコードは変更なし
   const renderHead = (
     <Stack spacing={1.5} sx={{ mb: 5 }}>
       <Typography variant="h5">Thootに登録</Typography>
@@ -102,12 +117,12 @@ export function JwtSignUpView() {
 
   const renderForm = (
     <Stack spacing={3}>
-      <Field.Text name="email" label="Email address" InputLabelProps={{ shrink: true }} />
+      <Field.Text name="email" label="メールアドレス" InputLabelProps={{ shrink: true }} />
   
       <Field.Text
         name="password"
-        label="Password"
-        placeholder="6+ characters"
+        label="パスワード"
+        placeholder="8文字以上、大文字を含む" // 変更: プレースホルダーテキストを更新
         type={password.value ? 'text' : 'password'}
         InputLabelProps={{ shrink: true }}
         InputProps={{
@@ -120,18 +135,25 @@ export function JwtSignUpView() {
           ),
         }}
       />
+
+      <PasswordRequirements password={passwordValue} /> {/* 追加: パスワード要件コンポーネントを表示 */}
   
       <LoadingButton
-        fullWidth
-        color="inherit"
-        size="large"
-        type="submit"
-        variant="contained"
-        loading={isSubmitting}
-        loadingIndicator="登録中..."
-      >
-        登録する
-      </LoadingButton>
+  fullWidth
+  color="inherit"
+  size="large"
+  type="submit"
+  variant="contained"
+  loading={isSubmitting}
+  loadingIndicator="登録中..."
+  sx={{
+    backgroundColor: "#F8A1A7",
+    '&:hover': { backgroundColor: "#F8A1A7" },
+    '&:disabled': { backgroundColor: "#F8A1A7" }
+  }}
+>
+  登録する
+</LoadingButton>
     </Stack>
   );
 
